@@ -1,20 +1,43 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import Home from "./pages/Home";
+import AddProduct from "./pages/AddProduct";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
-export default function App() {
+const Tab = createBottomTabNavigator();
+
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+    <NavigationContainer>
+      <Tab.Navigator screenOptions={{ headerShown: false }}>
+        <Tab.Screen
+          name="Home"
+          component={Home}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <FontAwesome name="home" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="AddProduct"
+          component={AddProduct}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <AntDesign name="plussquareo" size={size} color={color} />
+            ),
+          }}
+        />
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
+      </Tab.Navigator>
+
+
+      
+    </NavigationContainer>
+  );
+};
+
+export default App;
