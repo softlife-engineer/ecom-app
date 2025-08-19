@@ -2,11 +2,11 @@ import { create } from "zustand";
 
 const useCartStore = create((set) => ({
   cartItems: [],
-  addToCart: (item) =>
-    set((state) => ({ cartItems: [...state.cartItems, item] })),
-  removeFromCart: (item) =>
+  addToCart: (product) =>
+    set((state) => ({ cartItems: [...state.cartItems, product] })),
+  removeFromCart: (id) =>
     set((state) => ({
-      cartItems: state.cartItems.filter((i, index) => index !== item),
+      cartItems: state.cartItems.filter((product) => product.id !== id),
     })),
   clearCart: () => set((state) => ({ cartItems: [] })),
 }));

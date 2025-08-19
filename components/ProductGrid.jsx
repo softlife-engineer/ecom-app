@@ -1,34 +1,90 @@
-import React from "react";
-import { FlatList, Image, Text, StyleSheet, View, TouchableOpacity } from "react-native";
-import useProductStore from "../store/productStore";
+import React, { useEffect, useState } from "react";
+import {
+  FlatList,
+  Image,
+  Text,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import useCartStore from "../store/cartStore";
 
+const API_URL = "https://fakestoreapi.com/products";
+
 const ProductGrid = () => {
-  const { products } = useProductStore();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const { addToCart } = useCartStore();
+
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+
+      setProducts(data);
+    } catch (error) {
+      setError(error);
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  if (loading) {
+    return (
+      <View>
+        <ActivityIndicator size="large" />
+        <Text>Loading products..</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View>
+        <Text>Error fetching products: {error}</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Products</Text>
       <FlatList
         data={products}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(product, index) => index.toString()}
         contentContainerStyle={styles.products}
         scrollEnabled={false}
-        renderItem={({ item }) => (
+        renderItem={({ item: product }) => (
           <View style={styles.product}>
             <Image
               source={{
-                uri: "https://images.unsplash.com/photo-1545165393-011d14b0dcf0?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                uri: product?.image,
               }}
               style={{ width: 150, height: 150 }}
             />
             <View style={styles.productInfo}>
-              <Text style={styles.itemName}>{item.itemName}</Text>
-              <Text style={styles.itemPrice}>₦{item.itemPrice}</Text>
-                </View>
-                <TouchableOpacity style={styles.cart} onPress={() => addToCart(item)}>
-                    <Text style={styles.cartText}>Add To Cart</Text>
-                </TouchableOpacity>
+              <Text style={styles.itemName}>{product?.title}</Text>
+              <Text style={styles.itemPrice}>${product?.price}</Text>
+            </View>
+            <View style={styles.footer}>
+             
+                <Text style={styles.rating}>⭐ {product?.rating?.rate}</Text>
+            
+              <TouchableOpacity
+                style={styles.cart}
+                onPress={() => addToCart(product)}
+              >
+                <Text style={styles.cartText}>Add To Cart</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       />
@@ -61,8 +117,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   products: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: "column",
     gap: 20,
     marginVertical: 20,
   },
@@ -85,14 +140,26 @@ const styles = StyleSheet.create({
     backgroundColor: "#007070",
     padding: 10,
     borderRadius: 10,
-    width: "100%",
     alignItems: "center",
-      justifyContent: "center",
+    justifyContent: "center",
     marginTop: 10,
-    },
-    cartText: {
-        color: "#fff",
-        fontWeight: "bold",
+  },
+  cartText: {
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 16,
-    }
+  },
+  footer: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 10,
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  rating: {
+    fontWeight: 700,
+    fontSize: 20,
+   
+  }
 });

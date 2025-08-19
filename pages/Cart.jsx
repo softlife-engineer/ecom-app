@@ -27,24 +27,24 @@ const Cart = () => {
         <Text style={styles.title}>Cart</Text>
         <FlatList
           data={cartItems}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(product) => product.id.toString()}
           contentContainerStyle={styles.products}
           scrollEnabled={false}
-          renderItem={({ item, index }) => (
+          renderItem={({ item: product }) => (
             <View style={styles.product}>
               <Image
                 source={{
-                  uri: "https://images.unsplash.com/photo-1545165393-011d14b0dcf0?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  uri: product?.image,
                 }}
                 style={{ width: 150, height: 150 }}
               />
               <View style={styles.productInfo}>
-                <Text style={styles.itemName}>{item.itemName}</Text>
-                <Text style={styles.itemPrice}>₦{item.itemPrice}</Text>
+                <Text style={styles.itemName}>{product.title}</Text>
+                <Text style={styles.itemPrice}>${product.price}</Text>
               </View>
               <TouchableOpacity
                 style={styles.cart}
-                onPress={() => removeFromCart(index)}
+                onPress={() => removeFromCart(product.id)}
               >
                 <Text style={styles.cartText}>Remove</Text>
               </TouchableOpacity>
@@ -63,8 +63,7 @@ export default Cart;
 
 const styles = StyleSheet.create({
   products: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: "column",
     gap: 20,
     marginVertical: 20,
   },
