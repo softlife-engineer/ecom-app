@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import useCartStore from "../store/cartStore";
-
+import { useNavigation } from "@react-navigation/native";
 const API_URL = "https://fakestoreapi.com/products";
 
 const ProductGrid = () => {
@@ -17,7 +17,7 @@ const ProductGrid = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { addToCart } = useCartStore();
-
+  const navigation = useNavigation();
   const fetchProducts = async () => {
     setLoading(true);
     try {
@@ -63,7 +63,10 @@ const ProductGrid = () => {
         contentContainerStyle={styles.products}
         scrollEnabled={false}
         renderItem={({ item: product }) => (
-          <View style={styles.product}>
+          <TouchableOpacity
+            style={styles.product}
+            onPress={() => navigation.navigate("ProductDetails", {product})}
+          >
             <Image
               source={{
                 uri: product?.image,
@@ -75,9 +78,8 @@ const ProductGrid = () => {
               <Text style={styles.itemPrice}>${product?.price}</Text>
             </View>
             <View style={styles.footer}>
-             
-                <Text style={styles.rating}>⭐ {product?.rating?.rate}</Text>
-            
+              <Text style={styles.rating}>⭐ {product?.rating?.rate}</Text>
+
               <TouchableOpacity
                 style={styles.cart}
                 onPress={() => addToCart(product)}
@@ -85,7 +87,7 @@ const ProductGrid = () => {
                 <Text style={styles.cartText}>Add To Cart</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
       />
     </View>
@@ -160,6 +162,5 @@ const styles = StyleSheet.create({
   rating: {
     fontWeight: 700,
     fontSize: 20,
-   
-  }
+  },
 });
