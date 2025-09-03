@@ -14,6 +14,11 @@ import useCartStore from "../store/cartStore";
 const Cart = () => {
   const { cartItems, clearCart, removeFromCart } = useCartStore();
 
+  const total = cartItems
+    .reduce((sum, item) => sum + Number(item.price), 0)
+    .toFixed(2);
+  const itemCount = cartItems.length;
+
   if (cartItems.length === 0) {
     return (
       <SafeAreaView style={styles.container}>
@@ -23,36 +28,43 @@ const Cart = () => {
   }
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <Text style={styles.title}>Cart</Text>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <Text style={styles.title}>🛒 Your Cart</Text>
+        <View style={styles.summaryCard}>
+          <Text style={styles.summaryText}>
+            Items: <Text style={styles.summaryValue}>{itemCount}</Text>
+          </Text>
+          <Text style={styles.summaryText}>
+            Total: <Text style={styles.summaryValue}>${total}</Text>
+          </Text>
+        </View>
         <FlatList
           data={cartItems}
           keyExtractor={(product) => product.id.toString()}
           contentContainerStyle={styles.products}
           scrollEnabled={false}
           renderItem={({ item: product }) => (
-            <View style={styles.product}>
+            <View style={styles.productCard}>
               <Image
-                source={{
-                  uri: product?.image,
-                }}
-                style={{ width: 150, height: 150 }}
+                source={{ uri: product?.image }}
+                style={styles.productImage}
+                resizeMode="contain"
               />
               <View style={styles.productInfo}>
                 <Text style={styles.itemName}>{product.title}</Text>
                 <Text style={styles.itemPrice}>${product.price}</Text>
+                <TouchableOpacity
+                  style={styles.removeBtn}
+                  onPress={() => removeFromCart(product.id)}
+                >
+                  <Text style={styles.removeBtnText}>Remove</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                style={styles.cart}
-                onPress={() => removeFromCart(product.id)}
-              >
-                <Text style={styles.cartText}>Remove</Text>
-              </TouchableOpacity>
             </View>
           )}
         />
-        <TouchableOpacity style={styles.cart} onPress={() => clearCart()}>
-          <Text style={styles.cartText}>Clear Cart</Text>
+        <TouchableOpacity style={styles.clearBtn} onPress={() => clearCart()}>
+          <Text style={styles.clearBtnText}>Clear Cart</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -62,59 +74,123 @@ const Cart = () => {
 export default Cart;
 
 const styles = StyleSheet.create({
-  products: {
-    flexDirection: "column",
-    gap: 20,
-    marginVertical: 20,
+  container: {
+    flex: 1,
+    backgroundColor: "#f6f8fa",
+    paddingHorizontal: 10,
   },
-
-  product: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "#222",
+    marginTop: 30,
+    marginBottom: 10,
+    textAlign: "center",
+    letterSpacing: 1.5,
+    textShadowColor: "#e0e0e0",
+    textShadowRadius: 4,
+  },
+  summaryCard: {
     backgroundColor: "#fff",
-    padding: 10,
-    borderRadius: 10,
-    width: "100%",
+    borderRadius: 16,
+    padding: 18,
+    marginVertical: 10,
+    marginHorizontal: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  summaryText: {
+    fontSize: 18,
+    color: "#444",
+    fontWeight: "600",
+  },
+  summaryValue: {
+    color: "#007070",
+    fontWeight: "bold",
+    fontSize: 20,
+  },
+  products: {
+    gap: 18,
+    marginVertical: 18,
+    paddingBottom: 10,
+  },
+  productCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 14,
+    marginHorizontal: 8,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  productImage: {
+    width: 90,
+    height: 90,
+    borderRadius: 12,
+    marginRight: 16,
+    backgroundColor: "#f0f0f0",
   },
   productInfo: {
-    display: "flex",
+    flex: 1,
     flexDirection: "column",
-    gap: 5,
+    gap: 6,
   },
   itemName: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: "#222",
+    marginBottom: 2,
   },
   itemPrice: {
     fontSize: 16,
-    color: "#666",
-    fontWeight: "bold",
+    color: "#007070",
+    fontWeight: "600",
+    marginBottom: 8,
   },
-  cart: {
-    backgroundColor: "#007070",
-    padding: 10,
-    borderRadius: 10,
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 10,
+  removeBtn: {
+    backgroundColor: "#ff4d4f",
+    paddingVertical: 7,
+    paddingHorizontal: 18,
+    borderRadius: 8,
+    alignSelf: "flex-start",
+    marginTop: 2,
   },
-  cartText: {
+  removeBtnText: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 15,
+    letterSpacing: 0.5,
   },
-  title: {
-    fontSize: 30,
+  clearBtn: {
+    backgroundColor: "#007070",
+    paddingVertical: 14,
+    borderRadius: 14,
+    marginHorizontal: 8,
+    marginTop: 18,
+    marginBottom: 30,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  clearBtnText: {
+    color: "#fff",
     fontWeight: "bold",
-    color: "#000",
-    marginTop: 20,
-    textAlign: "center",
-    textShadowColor: "#000",
-    textShadowRadius: 5,
-    letterSpacing: 1.5,
+    fontSize: 18,
+    letterSpacing: 1,
+    textTransform: "uppercase",
   },
 });

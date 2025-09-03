@@ -18,7 +18,6 @@ export default function AddProduct() {
   const addItem = () => {
     if (itemName && itemPrice) {
       addProduct({ itemName, itemPrice });
-      console.log(products);
       setItemName("");
       setItemPrice("");
     }
@@ -27,8 +26,7 @@ export default function AddProduct() {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Add New Product</Text>
-
-      <Text style={styles.slogan}>List a new product for sale </Text>
+      <Text style={styles.slogan}>List a new product for sale</Text>
 
       <TextInput
         placeholder="Name of Good"
@@ -48,9 +46,21 @@ export default function AddProduct() {
       />
 
       <Button title="Add Goods" onPress={addItem} />
+
+      <FlatList
+        data={products}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <Text style={styles.itemText}>
+            {item.itemName} - ${item.itemPrice}
+          </Text>
+        )}
+        style={{ marginTop: 20 }}
+      />
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -77,10 +87,8 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     marginVertical: 5,
-    fontFamily: "Arial",
     textTransform: "uppercase",
     letterSpacing: 2,
-    lineHeight: 22,
   },
   slogan: {
     fontWeight: "900",
@@ -89,6 +97,5 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     marginBottom: 20,
     textAlign: "center",
-    fontFamily: "Arial",
   },
 });
